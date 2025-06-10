@@ -75,10 +75,6 @@ HTML_CONTENT_DASHBOARD = """
             color: #28a745; /* Verde para valores positivos */
             margin-bottom: 10px;
         }
-        .card .description {
-            font-size: 0.95em;
-            color: #6c757d;
-        }
         .card.red .value {
             color: #dc3545; /* Vermelho para atenção/queda */
         }
@@ -107,6 +103,17 @@ HTML_CONTENT_DASHBOARD = """
         .product-list .product-sales {
             font-weight: 700;
             color: #007bff;
+        }
+        .growth-icon {
+            font-size: 1em;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .growth-icon.up {
+            color: #28a745; /* Verde */
+        }
+        .growth-icon.down {
+            color: #dc3545; /* Vermelho */
         }
         footer {
             background-color: #343a40;
@@ -167,6 +174,19 @@ HTML_CONTENT_DASHBOARD = """
             <p class="description">Visitantes que se tornaram compradores.</p>
         </div>
 
+        <div class="card {{ 'red' if sales_growth < 0 else 'blue' if sales_growth == 0 else 'green' }}">
+            <h2>Crescimento de Vendas (Mês a Mês)</h2>
+            <div class="value">
+                {{ sales_growth }}%
+                {% if sales_growth > 0 %}
+                    <span class="growth-icon up">&#9650;</span> {% elif sales_growth < 0 %}
+                    <span class="growth-icon down">&#9660;</span> {% else %}
+                    <span class="growth-icon">-</span>
+                {% endif %}
+            </div>
+            <p class="description">Comparado ao mês anterior.</p>
+        </div>
+
     </main>
 
     <footer>
@@ -188,6 +208,7 @@ def dashboard():
     average_ticket_value = round(total_sales / num_transactions if num_transactions > 0 else 0, 2)
     active_customers_count = random.randint(30, 150)
     conversion = round(random.uniform(1.5, 5.0), 2)
+    sales_growth_value = random.randint(-15, 25) # Crescimento de vendas, pode ser negativo
 
     # Top 3 produtos (aleatórios)
     products = ["Notebook Pro", "Smartphone X", "Fones de Ouvido BT", "Smartwatch Ultra", "Câmera Digital"]
@@ -211,7 +232,8 @@ def dashboard():
         average_ticket=f"{average_ticket_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), # Formata para BR
         active_customers=active_customers_count,
         conversion_rate=conversion,
-        top_products=top_products_data
+        top_products=top_products_data,
+        sales_growth=sales_growth_value # Novo dado para o card
     )
 
 if __name__ == '__main__':
